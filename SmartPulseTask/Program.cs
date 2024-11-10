@@ -1,16 +1,24 @@
+using SmartPulseTask.Services;
+using SmartPulseTask.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddHttpClient<ITransactionApiService, TransactionApiService>();
+builder.Services.AddScoped<ITransactionCalculationService, TransactionCalculationService>();
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseExceptionHandler("/Home/Error"); 
+    app.UseStatusCodePagesWithReExecute("/Home/Error", "?code={0}");
     app.UseHsts();
+}
+else
+{
+    app.UseDeveloperExceptionPage();
 }
 
 app.UseHttpsRedirection();
@@ -22,6 +30,6 @@ app.UseAuthorization();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+    pattern: "{controller=Transaction}/{action=Index}/{id?}");
 
 app.Run();
